@@ -1,0 +1,2 @@
+# SIT
+Simple Issue Tracker
