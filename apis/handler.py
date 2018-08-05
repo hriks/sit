@@ -13,8 +13,9 @@ ERROR_CODES = {
     "INVN005": "Mandatory fields are missing.",
     "INVN006": "User already exists with this username.",
     "INVN007": "Assignee not found with the username provided. Please verify username",
-    "INVN008": "Issue is not created by requesting user",
-    "INVN009": "Issue could not be raised as similar issue was found."
+    "INVN008": "Requestor is not the owner for this issue.",
+    "INVN009": "Issue could not be raised as similar issue was found.",
+    "INVN010": "Issue DoesNotExist."
 }
 
 

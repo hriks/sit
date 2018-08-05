@@ -133,3 +133,64 @@ def update_issue(request, user, *args, **kwargs):
             return make_exc_response(data, str(e), status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return make_exc_response(data, "INVN007", status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@auth_required()
+def get_all_issues(request, user, *args, **kwargs):
+    data = request.query_params.dict()
+    validated, incorrect_field = validate_unknown_fields(MANDATORY_FIELDS + ['assignee', 'status'], data)
+    if not validated:
+        return make_exc_response(
+            data, "INVN004", status.HTTP_400_BAD_REQUEST,
+            None, incorrect_field
+        )
+    validated, missing_field = validate_necessary_keys(MANDATORY_FIELDS, data)
+    if not validated:
+        return make_exc_response(
+            data, "INVN005", status.HTTP_400_BAD_REQUEST,
+            None, missing_field
+        )
+    try:
+        params = {'created_by': user}
+        for field in data.keys():
+            if field in ["assignee", "status"]:
+                if field == "assignee":
+                    assignee = User.objects.get(username=data[field])
+                    data[field] = assignee
+                params.update(
+                    {'{0}'.format(field): data[field]}
+                )
+        issues = Issue.objects.filter(**params)
+        return make_success_response(
+            data, {'issues': IssueSerializer(issues, many=True).data}, status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return make_exc_response(data, "INVN007", status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+@auth_required()
+def delete_issue(request, user, *args, **kwargs):
+    data = request.data.dict()
+    validated, incorrect_field = validate_unknown_fields(MANDATORY_FIELDS + ['reference_no'], data)
+    if not validated:
+        return make_exc_response(
+            data, "INVN004", status.HTTP_400_BAD_REQUEST,
+            None, incorrect_field
+        )
+    validated, missing_field = validate_necessary_keys(MANDATORY_FIELDS + ['reference_no'], data)
+    if not validated:
+        return make_exc_response(
+            data, "INVN005", status.HTTP_400_BAD_REQUEST,
+            None, missing_field
+        )
+    try:
+        issue = Issue.objects.get(reference_no=data['reference_no'])
+        assert issue.created_by == user, "INVN008"
+        issue.delete()
+        return make_success_response(
+            data, {'issues': data['reference_no'] + ' deleted successfully'}, status.HTTP_200_OK)
+    except Issue.DoesNotExist:
+        return make_exc_response(data, "INVN010", status.HTTP_404_NOT_FOUND)
+    except AssertionError as e:
+        return make_exc_response(data, str(e), status.HTTP_400_BAD_REQUEST)
