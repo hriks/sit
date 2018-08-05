@@ -104,10 +104,10 @@ WSGI_APPLICATION = 'sit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sit',
-        'USER': 'hriks',
-        'PASSWORD': 'hriks',
-        'HOST': 'localhost',
+        'NAME': os.environ.get('SIT_DBNAME'),
+        'USER': os.environ.get('SIT_DBOWNR'),
+        'PASSWORD': os.environ.get('SIT_DBPSWD'),
+        'HOST': os.environ.get('SIT_DBHOST'),
         'PORT': '5432',
     },
 }

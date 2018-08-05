@@ -9,6 +9,21 @@ with the usual python module setup, or like a docker user.
 
 ## REDIS SERVER & POSTGRESSQL is required
 
+## FOR DB AND MAIL CONFIGURATIONS
+
+Export these following environment varibales
+
+```
+export SIT_DBNAME = somevalue(DATABASE NAME)
+export SIT_DBOWNR = somevalue(DATABASE USERNAME)
+export SIT_DBPSWD = somevalue(DATABASE PASSWORD)
+export SIT_DBHOST = somevalue(HOST)
+export SIT_HOST = somevalue(smtp_host)
+export SIT_PORT = somevalue(smtp_port)
+export SIT_USER_EMAIL = somevalue(smtp_email)
+export SIT_PASSWORD = somevalue(stmp_password)
+```
+
 ### The pythonista way
 
 Ensure that you have an updated version of pip
@@ -50,6 +65,10 @@ python manage.py runserver
 ### 
 
 ## ADD USER (POST)
+```
+	http://localhost:8000/user/register/
+```
+
 All fields are compulsory
 ```
 FIELDS MANDATORY
@@ -74,6 +93,10 @@ Note access_token for futher authentication use
 
 ## UPDATE USER (POST)
 ```
+	http://localhost:8000/user/update/
+```
+
+```
 FIELDS MANDATORY
 	accesstoken
 
@@ -82,7 +105,8 @@ UPDATEABLE FIELDS(OPTIONAL)
 	password
 ```
 In response 
-```{
+```
+{
     "username": "hrik",
     "first_name": "Amit",
     "last_name": "Gupta",
@@ -96,6 +120,10 @@ In Case password change
 You will get new access_token
 
 ## ADD ISSUE (POST)
+```
+	http://localhost:8000/issue/add/
+```
+
 ```
 FIELDS MANDATORY
 	accesstoken
@@ -121,6 +149,10 @@ Note reference_no for further crud operations
 
 ## UPDATE ISSUE (POST)
 ```
+	http://localhost:8000/issue/update/
+```
+
+```
 FIELDS MANDATORY
 	accesstoken
 
@@ -144,6 +176,10 @@ In response
 ```
 ## DELETE ISSUE (DELETE)
 ```
+	http://localhost:8000/issue/delete/
+```
+
+```
 FIELDS MANDATORY
 	accesstoken
 	reference_no
@@ -158,6 +194,9 @@ In response
 ```
 
 ## GET ALL ISSUE (GET)
+```
+	http://localhost:8000/issue/all
+```
 ```
 FIELDS MANDATORY
 	accesstoken
