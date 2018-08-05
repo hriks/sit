@@ -6,6 +6,7 @@ from django.db import models
 import uuid
 
 from apis.handler import InvalidAccessToken, IssueAlreadyRegistered
+from apis.tasks import send_issue_assigned_mail
 
 JWT_SECRET = 'HRIKS56789SAARACHEEPO'
 
@@ -118,6 +119,8 @@ class Issue(models.Model):
         kwargs.update({'status': 'open'})
         issue, created = cls.objects.get_or_create(**kwargs)
         if created:
+            send_issue_assigned_mail.apply_async(
+                args=[str(issue.reference_no)], countdown=720)
             return issue
         raise IssueAlreadyRegistered("Similar issue found with same details")
 
@@ -125,4 +128,7 @@ class Issue(models.Model):
         for field, value in kwargs.items():
             setattr(self, field, value)
         self.save()
+        if 'assignee' in kwargs.keys():
+            send_issue_assigned_mail.apply_async(
+                args=[str(self.reference_no)], countdown=720)
         return self

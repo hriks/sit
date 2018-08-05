@@ -9,9 +9,32 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
+from __future__ import absolute_import
 
 import os
 
+import redis
+from kombu import Queue
+from celery.schedules import crontab
+
+BROKER_URL = 'redis://127.0.0.1:6379'
+REDIS_POOL = redis.ConnectionPool.from_url(BROKER_URL)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_QUEUES = (
+    Queue('celery'),
+)
+CELERYBEAT_SCHEDULE = {
+    'daily_assigned_issue_reminder': {
+        'task': 'apis.task.send_daily_assigned_issue',
+        'schedule': crontab(minute='*/1'),
+        'options': {'queue': 'celery'}
+    }
+}
+
+
+CELERY_TIMEZONE = 'Asia/Calcutta'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -108,6 +131,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+EMAIL_HOST = os.environ.get('SIT_HOST')
+EMAIL_PORT = os.environ.get('SIT_PORT', 465)
+EMAIL_HOST_USER = os.environ.get('SIT_USER_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('SIT_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
