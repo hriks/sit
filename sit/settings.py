@@ -28,7 +28,7 @@ CELERY_QUEUES = (
 CELERYBEAT_SCHEDULE = {
     'daily_assigned_issue_reminder': {
         'task': 'apis.task.send_daily_assigned_issue',
-        'schedule': crontab(minute='*/1'),
+        'schedule': crontab(hour='5', minute=51),
         'options': {'queue': 'celery'}
     }
 }
