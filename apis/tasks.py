@@ -15,7 +15,7 @@ def send_issue_assigned_mail(reference_no):
     from apis.models import Issue
     issue = Issue.objects.get(reference_no=reference_no)
     message = "Hi %s,\nIssue with reference_no %s is assigned to you." % (
-        issue.user.username, issue.reference_no)
+        issue.assignee.username, issue.reference_no)
     send_mail_task("New Issue Assigned", message, issue.assignee.email)
 
 
@@ -26,6 +26,6 @@ def send_daily_assigned_issue():
     print issues
     for issue in issues:
         message = "Hi %s,\nIssue with reference_no %s is assigned to you and currently its pending." % (
-            issue.user.username, issue.reference_no
+            issue.assignee.username, issue.reference_no
         )
         send_mail_task("New Issue Assigned", message, issue.assignee.email)
